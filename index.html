@@ -198,7 +198,7 @@ const POR_ID = Object.fromEntries(TODAS.map(s=>[s.id,s]));
 const LIMITE_APP = 60, LIMITE_USO = 500;
 
 const params = new URLSearchParams(location.search);
-const SALA = ((params.get('sala')||'geral').toLowerCase().replace(/[^a-z0-9_-]/g,'').slice(0,40)) || 'geral';
+const SALA = ((params.get('sala')||'sessao2').toLowerCase().replace(/[^a-z0-9_-]/g,'').slice(0,40)) || 'sessao2';
 const ADMIN = params.has('admin');
 const CONFIGURADO = !!firebaseConfig.apiKey && !firebaseConfig.apiKey.startsWith('COLE');
 
