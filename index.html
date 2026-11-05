@@ -198,7 +198,8 @@ const POR_ID = Object.fromEntries(TODAS.map(s=>[s.id,s]));
 const LIMITE_APP = 60, LIMITE_USO = 500;
 
 const params = new URLSearchParams(location.search);
-const SALA = ((params.get('sala')||'sessao2').toLowerCase().replace(/[^a-z0-9_-]/g,'').slice(0,40)) || 'sessao2';
+const HOJE = new Intl.DateTimeFormat('en-CA',{timeZone:'America/Sao_Paulo'}).format(new Date()); // ex.: 2026-11-05
+const SALA = ((params.get('sala')||HOJE).toLowerCase().replace(/[^a-z0-9_-]/g,'').slice(0,40)) || HOJE;
 const ADMIN = params.has('admin');
 const CONFIGURADO = !!firebaseConfig.apiKey && !firebaseConfig.apiKey.startsWith('COLE');
 
