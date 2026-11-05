@@ -1,0 +1,520 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Um dia na vida do meu celular</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --tinta:#1E2747; --suave:#5B6478; --fundo:#F5F3EF; --papel:#FFFFFF;
+  --borda:#E2DED6; --marinho:#1F2A55; --raio:14px; --perigo:#B42318;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0}
+body{font-family:'Nunito',system-ui,-apple-system,'Segoe UI',sans-serif;color:var(--tinta);background:var(--fundo);line-height:1.45;-webkit-font-smoothing:antialiased}
+button,input,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--marinho);outline-offset:2px}
+
+/* ---------- Topo ---------- */
+.topo{max-width:1440px;margin:0 auto;padding:28px 24px 6px}
+.titulo-linha{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.selo{background:var(--marinho);color:#fff;font-weight:800;border-radius:999px;width:42px;height:42px;display:grid;place-items:center;font-size:15px;flex:none}
+h1{margin:0;font-size:clamp(1.4rem,2.6vw,2rem);font-weight:800;color:var(--marinho);letter-spacing:-.01em}
+.duracao{font-weight:700;color:var(--suave);font-size:.9rem;background:var(--papel);border:1px solid var(--borda);border-radius:999px;padding:3px 12px}
+.instrucao{font-size:1.12rem;margin:14px 0 4px;max-width:62ch}
+.aviso{color:var(--suave);font-size:.93rem;margin:0 0 12px;max-width:70ch}
+.barra{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:4px 0 6px}
+.status{display:inline-flex;align-items:center;gap:8px;font-size:.85rem;font-weight:700;padding:5px 12px;border-radius:999px;background:var(--papel);border:1px solid var(--borda);color:var(--suave)}
+.status i{width:9px;height:9px;border-radius:50%;background:#A3A9B6;flex:none}
+.status[data-s="aovivo"] i{background:#1F9D47;box-shadow:0 0 0 3px #1F9D4730}
+.status[data-s="offline"] i,.status[data-s="demo"] i{background:#D99A12}
+.status[data-s="erro"]{color:var(--perigo);border-color:#F0C3BE;background:#FFF4F2}
+.status[data-s="erro"] i{background:var(--perigo)}
+.alerta{max-width:1440px;margin:8px auto 0;padding:0 24px}
+.alerta div{background:#FFF8E6;border:1px solid #F1DDA6;border-radius:10px;padding:10px 14px;font-size:.92rem}
+.alerta div.erro{background:#FFF4F2;border-color:#F0C3BE;color:#7A1A12}
+
+/* ---------- Painel da pesquisadora ---------- */
+.admin{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;background:var(--papel);border:1px solid var(--borda);border-radius:12px;padding:10px 14px;font-size:.9rem;margin:6px 0}
+.admin strong{color:var(--marinho)}
+.btn{border:0;border-radius:8px;padding:8px 14px;font-weight:800;background:var(--marinho);color:#fff}
+.btn:disabled{opacity:.55;cursor:default}
+.btn-claro{background:transparent;color:var(--suave);font-weight:700;padding:8px 10px}
+
+/* ---------- Linha do tempo ---------- */
+.rolagem{overflow-x:auto;padding:10px 24px 18px;-webkit-overflow-scrolling:touch}
+.timeline{display:grid;grid-template-columns:repeat(6,minmax(196px,1fr));gap:16px;max-width:1440px;min-width:1260px;margin:0 auto}
+.coluna{display:flex;flex-direction:column;min-width:0;position:relative}
+.coluna.fora{margin-left:14px}
+.coluna.fora::before{content:"";position:absolute;left:-16px;top:8px;bottom:0;border-left:2px dashed var(--borda)}
+.marco{position:relative;height:58px;display:flex;justify-content:center;align-items:center}
+.coluna:not(.fora) .marco::before{content:"";position:absolute;left:-8px;right:-8px;top:50%;height:4px;margin-top:-2px;background:var(--cor);opacity:.45}
+.coluna:first-child .marco::before{left:50%}
+.coluna:nth-child(5) .marco::before{right:50%}
+.ponto{position:relative;z-index:1;width:50px;height:50px;border-radius:50%;background:var(--cor);color:var(--icone,#fff);display:grid;place-items:center;border:5px solid var(--fundo)}
+.ponto svg{width:22px;height:22px}
+.coluna h2{font-size:1rem;font-weight:800;text-align:center;margin:6px 0 10px;min-height:2.7em;display:flex;align-items:center;justify-content:center;line-height:1.25}
+.painel{background:var(--claro);border-radius:var(--raio);padding:12px;min-height:380px;display:flex;flex-direction:column;gap:10px;flex:1}
+.lista{display:flex;flex-direction:column;gap:10px}
+.vazio{color:var(--suave);font-size:.9rem;text-align:center;padding:14px 4px;opacity:.85}
+
+/* ---------- Cartões ---------- */
+.nota{background:var(--papel);border-radius:10px;padding:10px 12px;box-shadow:0 1px 2px rgba(30,39,71,.08),0 2px 8px rgba(30,39,71,.04);border-left:5px solid var(--cor);animation:entra .28s ease both}
+.nota.pendente{opacity:.7}
+.nota-app{font-weight:800;font-size:1.02rem;word-break:break-word}
+.nota-uso{margin:2px 0 0;white-space:pre-wrap;word-break:break-word;font-size:.95rem}
+.nota-pe{display:flex;align-items:center;gap:4px;margin-top:8px;font-size:.8rem;flex-wrap:wrap}
+.tag{font-weight:800;color:var(--suave);background:var(--fundo);border-radius:999px;padding:2px 9px;margin-right:auto}
+.acao{background:none;border:0;padding:4px 6px;border-radius:6px;font-weight:700;color:var(--suave);text-decoration:underline;text-underline-offset:2px}
+.acao:hover{background:var(--fundo)}
+.acao.confirmar{color:#fff;background:var(--perigo);text-decoration:none}
+@keyframes entra{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.nota{animation:none}}
+
+/* ---------- Formulários ---------- */
+.add{margin-top:auto;border:2px dashed var(--cor);background:rgba(255,255,255,.55);font-weight:800;border-radius:10px;padding:11px 10px;width:100%}
+.add:hover{background:var(--papel)}
+.form{background:var(--papel);border-radius:10px;padding:10px;display:grid;gap:8px;box-shadow:0 0 0 2px var(--cor)}
+.form label{font-size:.82rem;font-weight:800;display:grid;gap:4px}
+.form input,.form textarea{width:100%;border:1px solid var(--borda);border-radius:8px;padding:8px 10px;background:#FCFBF9;font-size:16px}
+.form textarea{resize:vertical;min-height:76px}
+.form input:focus,.form textarea:focus{outline:none;border-color:var(--cor);box-shadow:0 0 0 3px color-mix(in srgb,var(--cor) 25%,transparent);background:#fff}
+.form-botoes{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.form .btn{background:var(--marinho)}
+.form .btn-claro{background:transparent;color:var(--suave)}
+.form input,.form textarea{font-weight:400}
+.form input::placeholder,.form textarea::placeholder{color:#9AA0AC}
+.msg{font-size:.82rem;font-weight:700}
+.msg.ok{color:#17803A}
+.msg.erro{color:var(--perigo)}
+.conta{font-size:.75rem;color:var(--suave);text-align:right;margin-top:-4px}
+
+/* ---------- Regras ---------- */
+.regras{max-width:1440px;margin:6px auto 48px;padding:0 24px}
+.regras .painel{min-height:0;padding:16px}
+.regras-topo{display:flex;gap:12px;align-items:flex-start}
+.regras-topo .ponto{border-color:var(--claro);flex:none;width:46px;height:46px}
+.regras h2{margin:4px 0 2px;font-size:1.08rem;font-weight:800}
+.regras p.pergunta{margin:0;color:var(--tinta);font-size:.97rem}
+.regras .lista{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px;margin-top:6px}
+.regras .add,.regras .form{max-width:520px}
+.regras .add{margin-top:0}
+
+.rodape{max-width:1440px;margin:0 auto;padding:0 24px 32px;color:var(--suave);font-size:.82rem}
+
+/* ---------- Celular: linha do tempo vertical ---------- */
+@media (max-width:780px){
+  .topo{padding:20px 16px 4px}
+  .alerta,.regras,.rodape{padding-left:16px;padding-right:16px}
+  .rolagem{overflow:visible;padding:8px 16px 16px}
+  .timeline{grid-template-columns:1fr;min-width:0;gap:22px;position:relative}
+  .timeline::before{content:"";position:absolute;left:23px;top:24px;bottom:40px;width:4px;border-radius:2px;opacity:.4;
+    background:linear-gradient(#5B8DEF,#D65DB1 20%,#E0A81E 40%,#5FA83B 60%,#4A63C9 80%,#D9534F)}
+  .coluna{padding-left:60px}
+  .coluna.fora{margin-left:0}
+  .coluna.fora::before{display:none}
+  .marco{position:absolute;left:0;top:0;height:auto}
+  .marco::before{display:none}
+  .ponto{width:50px;height:50px}
+  .coluna h2{text-align:left;justify-content:flex-start;min-height:50px;margin:0 0 8px;font-size:1.05rem}
+  .painel{min-height:0}
+}
+</style>
+</head>
+<body>
+
+<header class="topo">
+  <div class="titulo-linha">
+    <span class="selo" aria-hidden="true">4a</span>
+    <h1>Um dia na vida do meu celular</h1>
+    <span class="duracao">10–15 min</span>
+  </div>
+  <p class="instrucao">Escreva quais apps você usa em cada momento do dia: para que você usa cada um e por quê?</p>
+  <p class="aviso">Você não precisa colocar seu nome. Evite escrever informações que identifiquem você ou outras pessoas. As respostas de todo mundo aparecem aqui ao vivo, e você só pode editar ou apagar o que você mesmo escreveu.</p>
+  <div class="barra">
+    <span class="status" id="status" data-s="conectando" role="status" aria-live="polite"><i></i><span>Conectando…</span></span>
+  </div>
+  <div id="admin" hidden></div>
+</header>
+
+<div class="alerta" id="alerta" hidden></div>
+
+<div class="rolagem">
+  <div class="timeline" id="timeline"></div>
+</div>
+
+<section class="regras" id="regras"></section>
+
+<p class="rodape">Dica: no celular, role a página para baixo para ver todos os momentos do dia.</p>
+
+<script type="module">
+/* =====================================================================
+   CONFIGURAÇÃO DO FIREBASE
+   Cole aqui o objeto firebaseConfig do seu projeto (veja o LEIA-ME).
+   Enquanto ele não for preenchido, a página funciona em "modo
+   demonstração": as respostas ficam só neste navegador.
+   ===================================================================== */
+const firebaseConfig = {
+  apiKey: "AIzaSyDgIxh80NuqdBeVlJxz5rQOUX3JHyWfFbY",
+  authDomain: "um-dia-no-celular.firebaseapp.com",
+  projectId: "um-dia-no-celular",
+  storageBucket: "um-dia-no-celular.firebasestorage.app",
+  messagingSenderId: "1056625533663",
+  appId: "1:1056625533663:web:0e5d32c10c0090b8587f6a",
+  measurementId: "G-DX9CMDVDWC"
+};
+/* ===================================================================== */
+
+const FIREBASE_VERSAO = "10.12.2";
+
+const ICONES = {
+  nascer:'<path d="M3 19h18M6 15a6 6 0 0 1 12 0M12 3v5M9 6l3-3 3 3M4.2 9.2l1.4 1.4M19.8 9.2l-1.4 1.4"/>',
+  sol:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+  mochila:'<path d="M5 10a7 7 0 0 1 14 0v9a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2z"/><path d="M9 3.5V3h6v.5M9 14h6v4H9z"/>',
+  por:'<path d="M3 19h18M6 15a6 6 0 0 1 12 0M12 3v6M9 6l3 3 3-3"/>',
+  lua:'<path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z"/>',
+  calendario:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4M8 14h3M8 17h6"/>',
+  regras:'<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V2.8h6V4M8.5 10h7M8.5 13.5h7M8.5 17h4"/>'
+};
+
+const MOMENTOS = [
+  {id:'manha',     titulo:'Ao acordar e de manhã',                 cor:'#5B8DEF', claro:'#E7EEFD', icone:'nascer'},
+  {id:'escola',    titulo:'Na escola ou durante o dia',            cor:'#D65DB1', claro:'#FBE8F5', icone:'sol'},
+  {id:'depois',    titulo:'Depois da escola',                      cor:'#E0A81E', claro:'#FDF4D9', icone:'mochila', iconeCor:'#3A2C05'},
+  {id:'noite',     titulo:'À noite',                               cor:'#5FA83B', claro:'#EAF5E2', icone:'por'},
+  {id:'madrugada', titulo:'Na hora de dormir e de madrugada',      cor:'#4A63C9', claro:'#E5E9FA', icone:'lua'},
+  {id:'fds',       titulo:'No fim de semana ou em dias sem aula',  cor:'#D9534F', claro:'#FBE6E5', icone:'calendario', fora:true},
+];
+const REGRAS = {id:'regras', titulo:'Regras sobre o uso do celular ou de apps', cor:'#7C5CD6', claro:'#EEE9FB', icone:'regras',
+  pergunta:'Existem regras sobre quando ou por quanto tempo você pode usar o celular? Ou sobre para que você pode usá-lo?'};
+const TODAS = [...MOMENTOS, REGRAS];
+const POR_ID = Object.fromEntries(TODAS.map(s=>[s.id,s]));
+
+const LIMITE_APP = 60, LIMITE_USO = 500;
+
+const params = new URLSearchParams(location.search);
+const SALA = ((params.get('sala')||'geral').toLowerCase().replace(/[^a-z0-9_-]/g,'').slice(0,40)) || 'geral';
+const ADMIN = params.has('admin');
+const CONFIGURADO = !!firebaseConfig.apiKey && !firebaseConfig.apiKey.startsWith('COLE');
+
+const estado = { notas:[], uid:null, editando:null, rascunho:null, backend:null };
+
+/* ---------------- utilidades ---------------- */
+const $ = (sel, raiz=document) => raiz.querySelector(sel);
+function el(tag, attrs={}, ...filhos){
+  const e = document.createElement(tag);
+  for (const [k,v] of Object.entries(attrs)){
+    if (v==null || v===false) continue;
+    if (k==='class') e.className=v;
+    else if (k==='text') e.textContent=v;
+    else if (k==='html') e.innerHTML=v;
+    else if (k.startsWith('on')) e.addEventListener(k.slice(2), v);
+    else e.setAttribute(k, v===true?'':v);
+  }
+  for (const f of filhos) if (f!=null) e.append(f);
+  return e;
+}
+function icone(nome){
+  return el('span',{class:'ponto','aria-hidden':'true',html:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ICONES[nome]}</svg>`});
+}
+function estiloSecao(s){ return `--cor:${s.cor};--claro:${s.claro};${s.iconeCor?`--icone:${s.iconeCor};`:''}`; }
+const limpar = t => String(t||'').replace(/\s+$/,'').replace(/^\s+/,'');
+
+function setStatus(s, texto){
+  const st = $('#status'); st.dataset.s = s; st.lastElementChild.textContent = texto;
+}
+function setAlerta(texto, tipo){
+  const a = $('#alerta');
+  if (!texto){ a.hidden = true; a.innerHTML=''; return; }
+  a.hidden = false; a.innerHTML = '';
+  a.append(el('div',{class:tipo==='erro'?'erro':'', text:texto}));
+}
+
+/* ---------------- montagem da página ---------------- */
+function formNovo(secao){
+  const ehRegra = secao.id==='regras';
+  const wrap = el('div',{class:'novo'});
+  const botao = el('button',{class:'add',type:'button',text: ehRegra ? '+ Adicionar uma regra' : '+ Adicionar app'});
+  const app = ehRegra ? null : el('input',{type:'text',maxlength:LIMITE_APP,placeholder:'Ex.: WhatsApp',autocomplete:'off'});
+  const uso = el('textarea',{maxlength:LIMITE_USO,placeholder: ehRegra
+      ? 'Ex.: Só posso usar depois de fazer a lição. Quem combinou foi…'
+      : 'Ex.: Para falar com meus amigos, porque…'});
+  const msg = el('span',{class:'msg','aria-live':'polite'});
+  const salvar = el('button',{class:'btn',type:'submit',text:'Salvar'});
+  const cancelar = el('button',{class:'btn btn-claro',type:'button',text:'Fechar'});
+  const form = el('form',{class:'form',hidden:true},
+    app ? el('label',{}, 'Qual app?', app) : null,
+    el('label',{}, ehRegra ? 'Qual é a regra?' : 'Para que você usa? Por quê?', uso),
+    el('div',{class:'form-botoes'}, salvar, cancelar, msg)
+  );
+  botao.addEventListener('click',()=>{ form.hidden=false; botao.hidden=true; (app||uso).focus(); });
+  cancelar.addEventListener('click',()=>{ form.hidden=true; botao.hidden=false; msg.textContent=''; botao.focus(); });
+  if (app) app.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); uso.focus(); }});
+  uso.addEventListener('keydown',e=>{ if(e.key==='Enter' && (e.ctrlKey||e.metaKey)){ e.preventDefault(); form.requestSubmit(); }});
+  form.addEventListener('submit', async e=>{
+    e.preventDefault();
+    const dados = { secao:secao.id, app: app?limpar(app.value):'', uso: limpar(uso.value) };
+    if (!dados.app && !dados.uso){ msg.className='msg erro'; msg.textContent = ehRegra?'Escreva a regra antes de salvar.':'Escreva o nome do app ou para que você usa.'; return; }
+    if (!estado.backend){ msg.className='msg erro'; msg.textContent='Ainda conectando… tente de novo em alguns segundos.'; return; }
+    salvar.disabled = true; msg.className='msg'; msg.textContent='Salvando…';
+    try{
+      await estado.backend.adicionar(dados);
+      if (app) app.value=''; uso.value='';
+      msg.className='msg ok'; msg.textContent='Salvo! Pode adicionar outro.';
+      (app||uso).focus();
+      setTimeout(()=>{ if(msg.textContent.startsWith('Salvo')) msg.textContent=''; }, 3500);
+    }catch(err){
+      console.error(err);
+      msg.className='msg erro'; msg.textContent='Não foi possível salvar. Verifique a internet e tente de novo.';
+    }finally{ salvar.disabled=false; }
+  });
+  wrap.append(botao, form);
+  return wrap;
+}
+
+function montar(){
+  const tl = $('#timeline');
+  for (const m of MOMENTOS){
+    const col = el('section',{class:'coluna'+(m.fora?' fora':''),style:estiloSecao(m),'aria-labelledby':'t-'+m.id},
+      el('div',{class:'marco'}, icone(m.icone)),
+      el('h2',{id:'t-'+m.id,text:m.titulo}),
+      el('div',{class:'painel'},
+        el('div',{class:'lista',id:'lista-'+m.id}),
+        formNovo(m)
+      )
+    );
+    tl.append(col);
+  }
+  const r = REGRAS;
+  $('#regras').setAttribute('style', estiloSecao(r));
+  $('#regras').append(
+    el('div',{class:'painel'},
+      el('div',{class:'regras-topo'}, icone(r.icone),
+        el('div',{}, el('h2',{text:r.titulo}), el('p',{class:'pergunta',text:r.pergunta}))
+      ),
+      el('div',{class:'lista',id:'lista-regras'}),
+      formNovo(r)
+    )
+  );
+  if (ADMIN) montarAdmin();
+}
+
+/* ---------------- cartões ---------------- */
+function assinatura(n){
+  return JSON.stringify([n.app||'', n.uso||'', n.autor===estado.uid, !!n.pendente, estado.editando===n.id]);
+}
+function cartao(n){
+  const minha = n.autor===estado.uid;
+  const ehRegra = n.secao==='regras';
+  const c = el('article',{class:'nota'+(n.pendente?' pendente':''),'data-id':n.id});
+  c.dataset.sig = assinatura(n);
+  if (estado.editando===n.id && minha){ c.append(formEdicao(n, ehRegra)); return c; }
+  if (n.app) c.append(el('div',{class:'nota-app',text:n.app}));
+  if (n.uso) c.append(el('p',{class:'nota-uso',text:n.uso}));
+  if (minha){
+    const apagar = el('button',{class:'acao',type:'button',text:'Apagar'});
+    let timer;
+    apagar.addEventListener('click', async ()=>{
+      if (!apagar.classList.contains('confirmar')){
+        apagar.classList.add('confirmar'); apagar.textContent='Confirmar?';
+        timer = setTimeout(()=>{ apagar.classList.remove('confirmar'); apagar.textContent='Apagar'; }, 3500);
+        return;
+      }
+      clearTimeout(timer); apagar.disabled=true; apagar.textContent='Apagando…';
+      try{ await estado.backend.apagar(n.id); }
+      catch(err){ console.error(err); apagar.disabled=false; apagar.classList.remove('confirmar'); apagar.textContent='Erro — tentar de novo'; }
+    });
+    c.append(el('div',{class:'nota-pe'},
+      el('span',{class:'tag',text:'Sua resposta'}),
+      el('button',{class:'acao',type:'button',text:'Editar',onclick:()=>{ estado.editando=n.id; estado.rascunho={app:n.app||'',uso:n.uso||''}; renderizar(); const f=document.querySelector(`[data-id="${CSS.escape(n.id)}"] input, [data-id="${CSS.escape(n.id)}"] textarea`); f&&f.focus(); }}),
+      apagar
+    ));
+  }
+  return c;
+}
+function formEdicao(n, ehRegra){
+  const r = estado.rascunho || {app:n.app||'',uso:n.uso||''};
+  const app = ehRegra ? null : el('input',{type:'text',maxlength:LIMITE_APP,'aria-label':'Qual app?'});
+  if (app){ app.value=r.app; app.addEventListener('input',()=>estado.rascunho.app=app.value); }
+  const uso = el('textarea',{maxlength:LIMITE_USO,'aria-label':ehRegra?'Qual é a regra?':'Para que você usa? Por quê?'});
+  uso.value = r.uso; uso.addEventListener('input',()=>estado.rascunho.uso=uso.value);
+  const msg = el('span',{class:'msg'});
+  const salvar = el('button',{class:'btn',type:'submit',text:'Salvar'});
+  const form = el('form',{class:'form'},
+    app ? el('label',{}, 'Qual app?', app) : null,
+    el('label',{}, ehRegra?'Qual é a regra?':'Para que você usa? Por quê?', uso),
+    el('div',{class:'form-botoes'}, salvar,
+      el('button',{class:'btn btn-claro',type:'button',text:'Cancelar',onclick:()=>{ estado.editando=null; estado.rascunho=null; renderizar(); }}),
+      msg)
+  );
+  form.addEventListener('submit', async e=>{
+    e.preventDefault();
+    const dados = { app: app?limpar(app.value):'', uso: limpar(uso.value) };
+    if (!dados.app && !dados.uso){ msg.className='msg erro'; msg.textContent='O texto não pode ficar vazio. Use "Apagar" se quiser remover.'; return; }
+    salvar.disabled=true; msg.className='msg'; msg.textContent='Salvando…';
+    try{ await estado.backend.editar(n.id, dados); estado.editando=null; estado.rascunho=null; renderizar(); }
+    catch(err){ console.error(err); salvar.disabled=false; msg.className='msg erro'; msg.textContent='Não foi possível salvar.'; }
+  });
+  return form;
+}
+
+/* Atualiza as listas sem recriar o que não mudou (não atrapalha quem está digitando). */
+function renderizar(){
+  if (estado.editando && !estado.notas.some(n=>n.id===estado.editando)){ estado.editando=null; estado.rascunho=null; }
+  for (const s of TODAS){
+    const lista = $('#lista-'+s.id);
+    const notas = estado.notas.filter(n=>n.secao===s.id).sort((a,b)=>a.criadoEm-b.criadoEm);
+    const existentes = new Map([...lista.querySelectorAll(':scope > .nota')].map(e=>[e.dataset.id,e]));
+    const vazio = lista.querySelector(':scope > .vazio');
+    if (!notas.length){
+      existentes.forEach(e=>e.remove());
+      if (!vazio) lista.append(el('p',{class:'vazio',text: s.id==='regras' ? 'Nenhuma regra ainda.' : 'Ainda não tem nada aqui.'}));
+      continue;
+    }
+    if (vazio) vazio.remove();
+    const ids = new Set(notas.map(n=>n.id));
+    existentes.forEach((e,id)=>{ if(!ids.has(id)) e.remove(); });
+    notas.forEach((n,i)=>{
+      let c = existentes.get(n.id);
+      if (!c || c.dataset.sig!==assinatura(n)){
+        const novo = cartao(n);
+        if (c){ novo.style.animation='none'; c.replaceWith(novo); }
+        c = novo;
+      }
+      if (lista.children[i]!==c) lista.insertBefore(c, lista.children[i]||null);
+    });
+  }
+  if (ADMIN) atualizarAdmin();
+}
+
+/* ---------------- painel da pesquisadora (?admin) ---------------- */
+function montarAdmin(){
+  const box = $('#admin'); box.hidden=false; box.className='admin';
+  box.append(
+    el('span',{}, el('strong',{text:'Modo pesquisadora'}), ' · sala: ', el('code',{text:SALA})),
+    el('span',{id:'admin-contagem'}),
+    el('button',{class:'btn',type:'button',text:'Baixar respostas (CSV)',onclick:baixarCSV})
+  );
+}
+function atualizarAdmin(){
+  const pessoas = new Set(estado.notas.map(n=>n.autor)).size;
+  $('#admin-contagem').textContent = `${estado.notas.length} respostas · ${pessoas} participante${pessoas===1?'':'s'}`;
+}
+function baixarCSV(){
+  const notas = [...estado.notas].sort((a,b)=>a.criadoEm-b.criadoEm);
+  const codigos = new Map();
+  for (const n of notas) if (!codigos.has(n.autor)) codigos.set(n.autor, 'P'+String(codigos.size+1).padStart(2,'0'));
+  const ordem = Object.fromEntries(TODAS.map((s,i)=>[s.id,i]));
+  notas.sort((a,b)=>(ordem[a.secao]-ordem[b.secao]) || (a.criadoEm-b.criadoEm));
+  const q = v => '"'+String(v??'').replace(/"/g,'""')+'"';
+  const linhas = [['sala','momento','app','para_que_e_por_que','participante','criado_em']];
+  for (const n of notas){
+    linhas.push([SALA, POR_ID[n.secao]?.titulo||n.secao, n.app||'', n.uso||'', codigos.get(n.autor), new Date(n.criadoEm).toLocaleString('pt-BR')]);
+  }
+  const csv = '﻿' + linhas.map(l=>l.map(q).join(';')).join('\r\n');
+  const url = URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
+  const a = el('a',{href:url,download:`respostas-${SALA}-${new Date().toISOString().slice(0,10)}.csv`});
+  document.body.append(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url), 2000);
+}
+
+/* ---------------- backend: Firebase ---------------- */
+async function iniciarFirebase(){
+  const base = `https://www.gstatic.com/firebasejs/${FIREBASE_VERSAO}`;
+  const [{initializeApp}, fs, au] = await Promise.all([
+    import(`${base}/firebase-app.js`), import(`${base}/firebase-firestore.js`), import(`${base}/firebase-auth.js`)
+  ]);
+  const app = initializeApp(firebaseConfig);
+  const auth = au.getAuth(app);
+  const db = fs.getFirestore(app);
+  let cred;
+  try { cred = await au.signInAnonymously(auth); }
+  catch(err){
+    const e = new Error('auth'); e.codigo = err.code; throw e;
+  }
+  const uid = cred.user.uid;
+  const col = fs.collection(db, 'salas', SALA, 'notas');
+  return {
+    uid,
+    escutar(cb, erro){
+      return fs.onSnapshot(col, {includeMetadataChanges:true}, snap=>{
+        cb(snap.docs.map(d=>{
+          const x = d.data({serverTimestamps:'estimate'});
+          return { id:d.id, secao:x.secao, app:x.app||'', uso:x.uso||'', autor:x.autor,
+                   criadoEm: x.criadoEm?.toMillis ? x.criadoEm.toMillis() : Date.now(),
+                   pendente: d.metadata.hasPendingWrites };
+        }), snap.metadata.fromCache);
+      }, erro);
+    },
+    adicionar: d => fs.addDoc(col, { secao:d.secao, app:d.app, uso:d.uso, autor:uid, criadoEm:fs.serverTimestamp() }),
+    editar: (id,d) => fs.updateDoc(fs.doc(col,id), { app:d.app, uso:d.uso, editadoEm:fs.serverTimestamp() }),
+    apagar: id => fs.deleteDoc(fs.doc(col,id)),
+  };
+}
+
+/* ---------------- backend: demonstração (sem Firebase) ---------------- */
+function iniciarDemo(){
+  const chave = 'demo-notas-'+SALA;
+  let uid = null;
+  try { uid = sessionStorage.getItem('demo-uid'); } catch {}
+  if (!uid){ uid = 'demo-'+Math.random().toString(36).slice(2,10); try{ sessionStorage.setItem('demo-uid',uid); }catch{} }
+  let memoria = [], ouvinte = null, canal = null;
+  const ler = () => { try { const v = localStorage.getItem(chave); return v ? JSON.parse(v) : memoria; } catch { return memoria; } };
+  const avisar = () => ouvinte && ouvinte(ler(), false);
+  try { canal = new BroadcastChannel(chave); canal.onmessage = avisar; } catch {}
+  window.addEventListener('storage', e => { if (e.key===chave) avisar(); });
+  const gravar = lista => { memoria = lista; try{ localStorage.setItem(chave, JSON.stringify(lista)); }catch{} try{ canal && canal.postMessage(1); }catch{} avisar(); };
+  const novoId = () => (crypto.randomUUID ? crypto.randomUUID() : String(Date.now())+Math.random().toString(36).slice(2));
+  return {
+    uid,
+    escutar(cb){ ouvinte = cb; avisar(); },
+    adicionar: async d => gravar([...ler(), {...d, id:novoId(), autor:uid, criadoEm:Date.now()}]),
+    editar: async (id,d) => gravar(ler().map(n => n.id===id ? {...n, ...d} : n)),
+    apagar: async id => gravar(ler().filter(n => n.id!==id)),
+  };
+}
+
+/* ---------------- início ---------------- */
+async function iniciar(){
+  montar();
+  renderizar();
+  if (!CONFIGURADO){
+    estado.backend = iniciarDemo();
+    estado.uid = estado.backend.uid;
+    setStatus('demo','Modo demonstração');
+    setAlerta('Modo demonstração: o Firebase ainda não foi configurado, então as respostas ficam só neste navegador (abra em duas abas para ver a atualização ao vivo). Siga o LEIA-ME para ativar o uso real.');
+    estado.backend.escutar(notas => { estado.notas = notas; renderizar(); });
+    return;
+  }
+  try{
+    const b = await iniciarFirebase();
+    estado.backend = b; estado.uid = b.uid;
+    b.escutar((notas, doCache) => {
+      estado.notas = notas; renderizar();
+      if (doCache) setStatus('offline','Sem conexão: tentando reconectar…');
+      else setStatus('aovivo','Ao vivo: atualiza sozinho');
+    }, err => {
+      console.error(err);
+      setStatus('erro','Erro de conexão');
+      setAlerta(err.code==='permission-denied'
+        ? 'O banco de dados recusou o acesso. Confira se as regras do Firestore foram publicadas (passo 3 do LEIA-ME).'
+        : 'Não foi possível carregar as respostas. Recarregue a página.', 'erro');
+    });
+  }catch(err){
+    console.error(err);
+    setStatus('erro','Erro de conexão');
+    const naoAtivado = ['auth/operation-not-allowed','auth/admin-restricted-operation','auth/configuration-not-found'].includes(err.codigo);
+    setAlerta(naoAtivado
+      ? 'O login anônimo não está ativado no Firebase. Ative em Authentication › Método de login › Anônimo (passo 2 do LEIA-ME).'
+      : 'Não foi possível conectar. Verifique a internet e recarregue a página.', 'erro');
+  }
+}
+iniciar();
+</script>
+</body>
+</html>
